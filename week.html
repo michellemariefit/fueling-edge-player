@@ -20,13 +20,13 @@
   </section>
   <section class="card soft">
     <h2>Why these four</h2>
-    <ul class="arrows"><li><b>Bridge snack:</b> fuel between school and practice, every practice day.</li><li><b>Recovery dinner:</b> regular protein + complex carbs + veggies within two hours of finishing.</li><li><b>Water goal:</b> her number, in jugs.</li><li><b>Bed by 10:</b> the repair hormone runs in the first hours of sleep.</li></ul>
+    <ul class="arrows"><li><b>Recovery snack:</b> fast-digesting protein + simple carbs within 30 minutes of finishing.</li><li><b>Recovery dinner:</b> regular protein + complex carbs + veggies within two hours of finishing.</li><li><b>Water goal:</b> her number, in jugs.</li><li><b>Bed by 10:</b> the repair hormone runs in the first hours of sleep.</li></ul>
     <p class="small muted">A kid who eats the snack, eats the dinner, sleeps, and eats breakfast is a different athlete than the kid who skipped two of those four, even if they did the exact same practice.</p>
   </section>
 </div>
 <script src="fuel.js"></script>
 <script>
-const ITEMS=[['snack','Bridge snack'],['dinner','Recovery dinner'],['water','Water goal'],['bed','Bed by 10']];
+const ITEMS=[['snack','Recovery snack'],['dinner','Recovery dinner'],['water','Water goal'],['bed','Bed by 10']];
 function monday(){const d=today();d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
 function render(){const m=monday();const days=Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d});
   $('#weekLabel').textContent=`${m.toLocaleDateString([], {month:'short',day:'numeric'})} to ${days[6].toLocaleDateString([], {month:'short',day:'numeric'})}`;

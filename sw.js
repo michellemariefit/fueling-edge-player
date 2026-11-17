@@ -1,5 +1,5 @@
 // Offline cache for the Fueling Edge player. Bump VERSION when files change so phones refresh.
-const VERSION = 'fuel-v3';
+const VERSION = 'fuel-v4';
 const CORE = ['./', './start.html', './fuel.html', './gameday.html', './practice.html', './tournament.html', './recovery.html', './hydration.html', './enough.html', './picky.html', './recipes.html', './week.html', './install.html', './fuel.css', './fuel.js', './data/fuel.json', './manifest.json', './icons/icon-192.png', './icons/icon-512.png', './icons/logo.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => Promise.all(CORE.map(u => fetch(u, { cache: 'no-cache' }).then(r => c.put(u, r)).catch(() => {})))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
