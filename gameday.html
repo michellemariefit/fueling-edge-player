@@ -47,8 +47,8 @@ function build(){const date=$('#gdate').value,time=$('#gtime').value;if(!date||!
     let t=new Date(g.getTime()+s.m*60000);let tl=s.m===-18*60?'Tonight':s.morning?'Breakfast':fmtTime(t);
     if(s.morning){const seven=new Date(g);seven.setHours(7,0,0,0);const latest=new Date(g.getTime()-90*60000);t=seven<latest?seven:new Date(g.getTime()-120*60000);tl=fmtTime(t)}
     const foods=s.cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');
-    return `<div class="slot"><div class="t">${tl}<small>${esc(s.label)}</small></div><div><h3>${esc(s.name)}</h3><p>${s.rule}</p>${foods?`<p class="picks">Her picks: ${esc(foods)}</p>`:''}<label class="small" style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" data-tick="${i}" ${ticks[i]?'checked':''} style="width:20px;height:20px;accent-color:var(--brand)"> Done</label></div></div>`}).join('')}</div>
-    <p class="small muted">Her picks come from the Fuel List. <a href="fuel.html" style="color:var(--brand);font-weight:700">Change them</a>.</p></section>`;
+    return `<div class="slot"><div class="t">${tl}<small>${esc(s.label)}</small></div><div><h3>${esc(s.name)}</h3><p>${s.rule}</p>${foods?`<p class="picks">Your athlete's picks: ${esc(foods)}</p>`:''}<label class="small" style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" data-tick="${i}" ${ticks[i]?'checked':''} style="width:20px;height:20px;accent-color:var(--brand)"> Done</label></div></div>`}).join('')}</div>
+    <p class="small muted">Your athlete's picks come from the Fuel List. <a href="fuel.html" style="color:var(--brand);font-weight:700">Change them</a>.</p></section>`;
   $('#ics').disabled=false;}
 function ics(){const {date,time}=store.get('fuel:game',{});if(!date)return;const g=new Date(date+'T'+time);
   const pad=n=>String(n).padStart(2,'0');const stamp=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;

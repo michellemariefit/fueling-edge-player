@@ -49,7 +49,7 @@ const PLANS={
          ['Home','A warm meal.',['protein','complex','veggies']]]}};
 let k=store.get('fuel:practice','early');
 function render(){const p=PLANS[k];document.querySelectorAll('#kind button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
-  $('#plan').innerHTML=`<section class="card"><h2>${esc(p.title)}</h2><p class="muted">${p.intro}</p><div class="timeline">${p.steps.map(([t,r,cats])=>{const foods=cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');return `<div class="slot" style="grid-template-columns:1fr"><div><h3>${esc(t)}</h3><p>${r}</p>${foods?`<p class="picks">Her picks: ${esc(foods)}</p>`:''}</div></div>`}).join('')}</div></section>`}
+  $('#plan').innerHTML=`<section class="card"><h2>${esc(p.title)}</h2><p class="muted">${p.intro}</p><div class="timeline">${p.steps.map(([t,r,cats])=>{const foods=cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');return `<div class="slot" style="grid-template-columns:1fr"><div><h3>${esc(t)}</h3><p>${r}</p>${foods?`<p class="picks">Your athlete's picks: ${esc(foods)}</p>`:''}</div></div>`}).join('')}</div></section>`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;k=b.dataset.k;store.set('fuel:practice',k);render()});
 loadData().then(render);
 </script>

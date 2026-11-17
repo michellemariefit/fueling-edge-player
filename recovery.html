@@ -54,5 +54,5 @@ function render(){const r=store.get(KEY,{});const now=Date.now();
 document.addEventListener('click',e=>{if(e.target.id==='startBtn'){store.set(KEY,{start:Date.now()});render()}
   if(e.target.id==='ateBtn'){const r=store.get(KEY,{});r.ate=Date.now();store.set(KEY,r);const w=store.get('fuel:week:'+TODAY,{});w.snack=true;store.set('fuel:week:'+TODAY,w);logDone('snack');render()}});
 setInterval(render,1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
-loadData().then(()=>{const f=picksText('fastprotein',2),s=picksText('simple',3),p=picksText('protein',2);$('#picks').textContent=`Her picks: ${[f,s,p].filter(Boolean).join(' · ')}`;render()});
+loadData().then(()=>{const f=picksText('fastprotein',2),s=picksText('simple',3),p=picksText('protein',2);$('#picks').textContent=`Your athlete's picks: ${[f,s,p].filter(Boolean).join(' · ')}`;render()});
 </script>
