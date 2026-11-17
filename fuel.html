@@ -1,0 +1,32 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Fuel List · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>The Fuel List</h1><p class=lead>Every food, sorted by when it plays.</p></header>
+  <div class="card soft"><p><b>How to use it.</b> Every food sits in a category, and every category has a time it plays. Tap the foods your kid actually eats. From then on, Game day, Practice day and Recovery show her foods instead of the generic list.</p></div>
+  <div class="chips" id="filter"><button class="chip" data-f="all" aria-pressed="true">All foods</button><button class="chip" data-f="likes" aria-pressed="false">Her picks</button></div>
+  <div id="cats"></div>
+  <div class="card"><p class="small muted">Simple carbs are the fast fuel for right around games. Complex carbs are the slow fuel for meals. Fast-digesting protein works close to practices and games; regular protein belongs at meals and recovery. That's the whole system.</p></div>
+</div>
+<script src="fuel.js"></script>
+<script>
+let f='all';
+function render(){const L=likes();
+  $('#cats').innerHTML=DATA.categories.map(c=>{const foods=f==='likes'?c.foods.filter(x=>L[x]):c.foods;if(f==='likes'&&!foods.length)return '';
+    return `<section class="card"><div><h2>${esc(c.name)}</h2><span class="when">When: ${esc(c.when)}</span></div>${c.note?`<p class="small muted">${esc(c.note)}</p>`:''}
+      <div class="chips">${foods.map(x=>`<button class="chip" data-food="${esc(x)}" aria-pressed="${!!L[x]}">${L[x]?'✓ ':''}${esc(x)}</button>`).join('')}</div></section>`}).join('')||'<div class="card"><p>No picks yet. Switch to All foods and tap the ones she eats.</p></div>';}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.food){const L=likes();L[b.dataset.food]=!L[b.dataset.food];store.set('fuel:likes',L);render()}
+  if(b.dataset.f){f=b.dataset.f;document.querySelectorAll('#filter .chip').forEach(x=>x.setAttribute('aria-pressed',x.dataset.f===f));render()}});
+loadData().then(render);
+</script>

@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>This Week · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>This Week</h1><p class=lead>Snack, dinner, water, bed. Three of four a day keeps the streak.</p></header>
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline"><h2 id="weekLabel">This week</h2><span class="chip tag" id="streak"></span></div>
+    <p class="small muted">Four things a day. Tick them as they happen. The app ticks snack and water for you when you use the Recovery and Hydration pages.</p>
+    <div id="grid"></div>
+  </section>
+  <section class="card soft">
+    <h2>Why these four</h2>
+    <ul class="arrows"><li><b>Bridge snack:</b> fuel between school and practice, every practice day.</li><li><b>Recovery dinner:</b> regular protein + complex carbs + veggies within two hours of finishing.</li><li><b>Water goal:</b> her number, in jugs.</li><li><b>Bed by 10:</b> the repair hormone runs in the first hours of sleep.</li></ul>
+    <p class="small muted">A kid who eats the snack, eats the dinner, sleeps, and eats breakfast is a different athlete than the kid who skipped two of those four, even if they did the exact same practice.</p>
+  </section>
+</div>
+<script src="fuel.js"></script>
+<script>
+const ITEMS=[['snack','Bridge snack'],['dinner','Recovery dinner'],['water','Water goal'],['bed','Bed by 10']];
+function monday(){const d=today();d.setDate(d.getDate()-((d.getDay()+6)%7));return d}
+function render(){const m=monday();const days=Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d});
+  $('#weekLabel').textContent=`${m.toLocaleDateString([], {month:'short',day:'numeric'})} to ${days[6].toLocaleDateString([], {month:'short',day:'numeric'})}`;
+  let html=`<div class="grid7" style="grid-template-columns:92px repeat(7,1fr)"><div></div>${days.map(d=>`<div class="d">${d.toLocaleDateString([], {weekday:'short'}).slice(0,2)}</div>`).join('')}</div>`;
+  for(const [k,label] of ITEMS){html+=`<div class="grid7" style="margin-top:6px;grid-template-columns:92px repeat(7,1fr)"><div class="d" style="text-align:left;line-height:1.1;align-self:center">${esc(label)}</div>${days.map(d=>{const key=ymd(d);const w=store.get('fuel:week:'+key,{});const fut=d>today();return `<button data-k="${k}" data-d="${key}" class="${w[k]?'on':''} ${key===TODAY?'today':''}" ${fut?'disabled':''}>${w[k]?'✓':''}</button>`}).join('')}</div>`}
+  $('#grid').innerHTML=html;
+  let s=0;for(let i=0;i<60;i++){const d=today();d.setDate(d.getDate()-i);const w=store.get('fuel:week:'+ymd(d),{});const n=ITEMS.filter(([k])=>w[k]).length;if(n>=3)s++;else if(i>0)break}
+  $('#streak').textContent=s?`${s} day${s===1?'':'s'} in a row`:'';$('#streak').style.display=s?'':'none';}
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;const key='fuel:week:'+b.dataset.d;const w=store.get(key,{});w[b.dataset.k]=!w[b.dataset.k];store.set(key,w);render()});
+render();
+</script>

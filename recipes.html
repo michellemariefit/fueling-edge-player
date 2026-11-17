@@ -1,0 +1,37 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Michelle's Kitchen Pack · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>Michelle's Kitchen Pack</h1><p class=lead>13 recipes from my own kitchen, renamed for the job they do.</p></header>
+  <div class="chips" id="tags"></div>
+  <div id="list"></div>
+  <section class="card" id="shop" style="display:none"><h2>Store list</h2><p class="small muted">Everything you ticked, in one place. Tick again to clear.</p><div id="shoplist"></div><button class="chip" id="clearShop">Clear the list</button></section>
+  <div class="card soft"><p><b>Double-batch everything baked.</b> Cookies, muffins and bars all freeze beautifully. One Sunday hour fills the freezer with bridge snacks, game-day bag fillers and night-time treats for two weeks. And let her pick: a kid who chose her own snack eats her own snack.</p></div>
+</div>
+<script src="fuel.js"></script>
+<script>
+let tag='all';const SHOP='fuel:shop';
+function render(){const R=DATA.recipes;const tags=[...new Set(R.flatMap(r=>r.when))];
+  $('#tags').innerHTML=`<button class="chip" data-tag="all" aria-pressed="${tag==='all'}">All 13</button>`+tags.map(t=>`<button class="chip" data-tag="${esc(t)}" aria-pressed="${tag===t}">${esc(t)}</button>`).join('');
+  const shop=store.get(SHOP,{});const open=store.get('fuel:recipe:open','');
+  let last='';$('#list').innerHTML=R.filter(r=>tag==='all'||r.when.includes(tag)).map(r=>{const sec=r.section!==last?`<h2 class="also">${esc(r.section)}</h2>`:'';last=r.section;
+    return sec+`<details ${open===r.id?'open':''} data-id="${r.id}"><summary>${esc(r.name)}</summary><div class="in"><div class="chips">${r.when.map(w=>`<span class="chip tag">${esc(w)}</span>`).join('')}</div>${r.blurb?`<p class="small muted">${esc(r.blurb)}</p>`:''}
+      <h3>Ingredients <span class="small muted" style="font-weight:400">(tap to add to the store list)</span></h3><div>${r.ingredients.map((x,i)=>{const id=r.id+':'+i;return `<div class="item ${shop[id]?'done':''}" style="padding:6px 0"><input type="checkbox" id="i-${id}" data-shop="${id}" data-txt="${esc(x)}" ${shop[id]?'checked':''}><label for="i-${id}"><b style="font-weight:500;text-decoration:none">${esc(x)}</b></label></div>`}).join('')}</div>
+      <h3>Directions</h3><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">${r.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div></details>`}).join('');
+  const items=Object.entries(shop).filter(([k,v])=>v&&typeof v==='string');
+  $('#shop').style.display=items.length?'':'none';$('#shoplist').innerHTML=items.map(([k,v])=>`<div class="item" style="padding:6px 0"><input type="checkbox" data-shop="${k}" checked><label><b style="font-weight:500">${esc(v)}</b></label></div>`).join('');}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.tag){tag=b.dataset.tag;render()}if(b&&b.id==='clearShop'){store.set(SHOP,{});render()}});
+document.addEventListener('toggle',e=>{const d=e.target;if(d.tagName==='DETAILS'&&d.open)store.set('fuel:recipe:open',d.dataset.id)},true);
+document.addEventListener('change',e=>{const c=e.target.closest('input[data-shop]');if(!c)return;const s=store.get(SHOP,{});if(c.checked)s[c.dataset.shop]=c.dataset.txt||s[c.dataset.shop];else delete s[c.dataset.shop];store.set(SHOP,s);render()});
+loadData().then(render);
+</script>

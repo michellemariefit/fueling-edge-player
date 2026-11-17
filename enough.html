@@ -1,0 +1,65 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Is She Eating Enough? · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>Is She Eating Enough?</h1><p class=lead>The module most parents don't know they need, and the one I most want you to read.</p></header>
+  <div class="card soft"><p><b>The double bill nobody talks about.</b> A growing athlete's body is paying two bills at once: growth, and competitive training on top. The far more common problem in youth sports is kids training like athletes while eating like regular kids. An underfueled kid doesn't look underfueled. She looks tired. She looks moody. She looks like she lost her spark.</p></div>
+  <section class="card">
+    <h2>The signs to watch for</h2>
+    <p class="small muted">No single sign means anything by itself. It's the pattern, showing up and sticking around. Tick what you've been seeing.</p>
+    <div id="signs"></div>
+    <div id="verdict"></div>
+  </section>
+  <section class="card">
+    <h2>The fix: add, never restrict</h2>
+    <p class="small muted">Quiet addition. You add fuel to the day she's already living.</p>
+    <ul class="arrows">
+      <li><b>Add the add-ons:</b> nut butter on the toast, avocado on the plate, cheese on the eggs. Healthy fats add real fuel without adding volume she has to chew through.</li>
+      <li><b>Make her drinks count:</b> milk, chocolate milk, or a smoothie with meals instead of water sometimes. 100% juice in the game window.</li>
+      <li><b>Add an evening snack:</b> yogurt with granola, a rice cake with peanut butter, a bowl of healthy cereal with milk. It fuels overnight recovery and it's the easiest meal of the day to add.</li>
+      <li><b>My healthy treats</b> are made for this window: the cookie, muffin and pancake recipes in the Kitchen Pack. A treat that's secretly a recovery snack.</li>
+      <li><b>Upgrade her smoothies invisibly:</b> avocado, oatmeal, or Greek yogurt. She can't taste the difference.</li>
+      <li><b>Feed every 2 to 3 hours:</b> the bridge-snack system. Small and steady beats big and rare.</li>
+      <li><b>Breakfast is non-negotiable,</b> and some training days deserve two: real breakfast at home, second breakfast mid-morning.</li>
+      <li><b>Fuel during long sessions:</b> anything over an hour gets simple carbs during.</li>
+    </ul>
+  </section>
+  <section class="card pink">
+    <h2>What not to do (this part is the whole module)</h2>
+    <ul class="arrows">
+      <li><b>No calorie counting, ever.</b> Not by her, not by you, not "just to check."</li>
+      <li><b>No weight talk and no body talk.</b> Not negative, and honestly, not much positive either. Her body is measured in what it can do.</li>
+      <li><b>Don't police the plate in front of her.</b> Add options quietly. Make the good stuff appear. Kids eat what's there.</li>
+      <li><b>Watch your own food talk.</b> Kids absorb every "I was so bad today." In this house, food is fuel, for everyone.</li>
+    </ul>
+    <p><b>An athlete who eats a lot is an athlete doing it right.</b> Say that out loud in your house.</p>
+  </section>
+  <details><summary>The Mason Jar Mix</summary><div class="in">
+    <p>In a mason jar, mix equal parts hemp seeds, chia seeds, and flax meal, a quarter cup of each. Keep it by the stove. A few tablespoons go into anything saucy: chili, stews, meat sauce, meatballs, meatloaf, even smoothies. They don't taste like anything, and they add fiber, healthy fats, and extra protein. They will never know it's there.</p>
+  </div></details>
+  <section class="card">
+    <h2>When to talk to her doctor</h2>
+    <p>This is education from a sports-nutrition and training perspective, not medical care. Bring her pediatrician in if you see persistent fatigue that adding fuel doesn't touch, irregular or missing periods, ongoing repeat injuries, or any changes in her eating habits or her relationship with food that worry you.</p>
+    <p><b>You're not overreacting by making that appointment.</b> Catching this early is everything.</p>
+  </section>
+</div>
+<script src="fuel.js"></script>
+<script>
+const SIGNS=[['fatigue','Constant fatigue that sleep doesn\'t seem to fix'],['mood','Mood swings beyond normal for her age: irritable, flat, checked out'],['sleep','Poor sleep despite being exhausted'],['plateau','A performance plateau or decline with no training explanation'],['sick','Getting sick often, one cold rolling into the next'],['injury','Repeat injuries or little aches that never fully clear'],['period','Irregular or missing periods (always deserves a conversation with her doctor)']];
+const KEY='fuel:signs';
+function render(){const t=store.get(KEY,{});const n=SIGNS.filter(([id])=>t[id]).length;
+  $('#signs').innerHTML=SIGNS.map(([id,txt])=>`<div class="item ${t[id]?'done':''}"><input type="checkbox" id="s-${id}" data-id="${id}" ${t[id]?'checked':''}><label for="s-${id}"><b style="text-decoration:none;color:var(--ink)">${esc(txt)}</b></label></div>`).join('');
+  $('#verdict').innerHTML=n===0?'':n===1?'<p class="small"><b>One sign.</b> Watch it for a couple of weeks and start the quiet additions below.</p>':t.period?'<p class="small" style="color:var(--accent)"><b>Missing or irregular periods is a direct signal from her body that fuel is short.</b> Start the additions below and book the pediatrician.</p>':`<p class="small" style="color:var(--accent)"><b>${n} signs together is a pattern.</b> Start the additions below today. If two weeks of adding fuel doesn\'t touch it, call her doctor.</p>`}
+document.addEventListener('change',e=>{const c=e.target.closest('input[data-id]');if(!c)return;const t=store.get(KEY,{});t[c.dataset.id]=c.checked;store.set(KEY,t);render()});
+render();
+</script>

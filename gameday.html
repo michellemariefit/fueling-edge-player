@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Game-Day Clock · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>The Game-Day Clock</h1><p class=lead>Type in the game time. The whole day fills in with real times.</p></header>
+  <section class="card">
+    <div class="two"><label class="field">Game day<input type="date" id="gdate"></label><label class="field">Game time<input type="time" id="gtime"></label></div>
+    <div class="cta-row"><button class="go" id="build">Build the clock</button><button class="go quiet" id="ics" disabled>Add to calendar</button></div>
+    <p class="small muted">The same clock, every game. The power is the repetition. After a few games it runs itself.</p>
+  </section>
+  <div id="clock"></div>
+  <details><summary>The rules behind the clock</summary><div class="in">
+    <p><b>The carb rule.</b> Complex carbs (pasta, rice, oatmeal, potatoes) are the slow fuel, so they belong at meals: the night before, breakfast, and the recovery meal. Simple carbs (fruit, applesauce, juice) and quick starches (pretzels, toast, plain bagels) digest fast, so they're the fuel for close to game time.</p>
+    <p><b>The protein rule.</b> Regular protein takes real energy to digest, so it belongs at meals with time to spare, 1.5+ hours before playing. Closer than that, if she needs protein, it has to be fast-digesting: egg whites or protein powder in a smoothie.</p>
+    <p><b>The veggie rule.</b> Veggies matter every day, but they slow digestion. From 90 minutes out until after the game, they sit on the bench.</p>
+    <p><b>The nothing-new rule.</b> Game day is never the day to try a new food, bar or drink. Everything gets tested on a practice day first.</p>
+    <p><b>The not-hungry rule.</b> Nerves and early mornings kill appetite, but her body still needs fuel. She eats something, even if it's small and simple.</p>
+    <p class="small muted">Digestion takes energy. Anything heavy, fried, high-fat or high-fiber pulls blood toward her stomach exactly when her muscles need it. So as game time gets closer, the food gets simpler.</p>
+  </div></details>
+</div>
+<script src="fuel.js"></script>
+<script>
+const SLOTS=[
+ {m:-18*60,label:'Night before',name:'Dinner',rule:'Complex carbs + regular protein (lean) + veggies. Add a healthy fat like avocado if they won\'t do veggies. Pasta with chicken, taco bowls, grill night. Nothing fried, no dessert. The treat comes after tomorrow\'s game.',cats:['complex','protein','veggies']},
+ {m:-3*60,label:'Game morning',name:'She eats. Not negotiable.',rule:'1.5+ hours before: regular protein + complex carbs + fruit. One hour or less: just quick starches + fruit. Rushed? The Wake-and-Fuel Formula: 1 fast-digesting protein, 1 complex carb, 1 fruit. Hotel? Bagel or toast first, add fruit.',cats:['fastprotein','complex','simple'],morning:true},
+ {m:-90,label:'90 min out',name:'The real meal window',rule:'Complex-carb forward, a normal serving of regular protein and/or a healthy fat. Protein oatmeal pancakes, bagel with avocado, waffle with peanut butter, smoothie. No veggies from here until after the game.',cats:['complex','protein','fats']},
+ {m:-45,label:'30 to 60 min out',name:'Simple carbs and quick starches only',rule:'Banana, tangerine, applesauce pouch, pretzels, half a granola bar. Nothing new on game day.',cats:['simple','quick']},
+ {m:-15,label:'In the car',name:'The salt pinch',rule:'A pinch of salt on the tongue, let it dissolve, then plenty of water.',cats:[]},
+ {m:0,label:'Game time',name:'Go.',rule:'Halftime: water. If the game runs past an hour or it\'s hot: simple carbs. Orange slices, applesauce, a few sips of juice or Gatorade (not soda).',cats:['simple']},
+ {m:30,label:'30 min after',name:'Recovery snack',rule:'Another game today? Simple carbs, restart the clock. Done for the day? Simple carb + regular protein: chocolate milk, deli meat, Chomps.',cats:['simple','protein'],after:true},
+ {m:120,label:'Within 2 hours',name:'A real meal',rule:'Dinner is the actual recovery tool. Regular protein + complex carbs + veggies.',cats:['protein','complex','veggies']}];
+const saved=store.get('fuel:game',{});
+$('#gdate').value=saved.date||TODAY;$('#gtime').value=saved.time||'10:00';
+function build(){const date=$('#gdate').value,time=$('#gtime').value;if(!date||!time)return;store.set('fuel:game',{date,time});
+  const g=new Date(date+'T'+time);const ticks=store.get('fuel:game:'+date,{});
+  $('#clock').innerHTML=`<section class="card"><h2>${g.toLocaleDateString([], {weekday:'long',month:'short',day:'numeric'})} · game at ${fmtTime(g)}</h2><div class="timeline">${SLOTS.map((s,i)=>{
+    let t=new Date(g.getTime()+s.m*60000);let tl=s.m===-18*60?'Tonight':s.morning?'Breakfast':fmtTime(t);
+    if(s.morning){const seven=new Date(g);seven.setHours(7,0,0,0);const latest=new Date(g.getTime()-90*60000);t=seven<latest?seven:new Date(g.getTime()-120*60000);tl=fmtTime(t)}
+    const foods=s.cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');
+    return `<div class="slot"><div class="t">${tl}<small>${esc(s.label)}</small></div><div><h3>${esc(s.name)}</h3><p>${s.rule}</p>${foods?`<p class="picks">Her picks: ${esc(foods)}</p>`:''}<label class="small" style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" data-tick="${i}" ${ticks[i]?'checked':''} style="width:20px;height:20px;accent-color:var(--brand)"> Done</label></div></div>`}).join('')}</div>
+    <p class="small muted">Her picks come from the Fuel List. <a href="fuel.html" style="color:var(--brand);font-weight:700">Change them</a>.</p></section>`;
+  $('#ics').disabled=false;}
+function ics(){const {date,time}=store.get('fuel:game',{});if(!date)return;const g=new Date(date+'T'+time);
+  const pad=n=>String(n).padStart(2,'0');const stamp=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+  const ev=SLOTS.filter(s=>s.m!==-18*60).map(s=>{let t=new Date(g.getTime()+s.m*60000);if(s.morning){t=new Date(g.getTime()-120*60000)}const e=new Date(t.getTime()+15*60000);
+    return `BEGIN:VEVENT\r\nUID:fuel-${date}-${s.m}@fuelingedge\r\nDTSTART:${stamp(t)}\r\nDTEND:${stamp(e)}\r\nSUMMARY:${s.label}: ${s.name}\r\nDESCRIPTION:${s.rule.replace(/,/g,'\\,')}\r\nBEGIN:VALARM\r\nTRIGGER:-PT0M\r\nACTION:DISPLAY\r\nDESCRIPTION:${s.name}\r\nEND:VALARM\r\nEND:VEVENT`}).join('\r\n');
+  const night=new Date(g);night.setDate(night.getDate()-1);night.setHours(18,0,0,0);const nightEv=`BEGIN:VEVENT\r\nUID:fuel-${date}-night@fuelingedge\r\nDTSTART:${stamp(night)}\r\nDTEND:${stamp(new Date(night.getTime()+15*60000))}\r\nSUMMARY:Night before: ${SLOTS[0].name}\r\nDESCRIPTION:${SLOTS[0].rule.replace(/,/g,'\\,')}\r\nEND:VEVENT`;
+  const txt=`BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//The Fueling Edge//EN\r\n${nightEv}\r\n${ev}\r\nEND:VCALENDAR`;
+  const a=document.createElement('a');a.href='data:text/calendar;charset=utf-8,'+encodeURIComponent(txt);a.download=`game-day-${date}.ics`;document.body.appendChild(a);a.click();a.remove();}
+document.addEventListener('click',e=>{if(e.target.id==='build')build();if(e.target.id==='ics')ics()});
+document.addEventListener('change',e=>{const c=e.target.closest('[data-tick]');if(!c)return;const date=$('#gdate').value;const t=store.get('fuel:game:'+date,{});t[c.dataset.tick]=c.checked;store.set('fuel:game:'+date,t)});
+loadData().then(()=>{if(saved.date)build()});
+</script>

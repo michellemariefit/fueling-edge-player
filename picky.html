@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Picky-Eater Playbook · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>The Picky-Eater Playbook</h1><p class=lead>Every recommendation in this program has a real-kid version.</p></header>
+  <div class="card soft"><p><b>Picky is normal.</b> Foods in the same category do the same job. A kid who eats freeze-dried strawberries instead of a banana is getting the same simple-carb fuel. You never need the specific food. You need a food from the right category, at the right time. When she rejects a food, swap inside the category, never fight at the table.</p></div>
+  <div class="chips" id="tabs"></div>
+  <div id="body"></div>
+  <section class="card pink">
+    <h2>The two rules that protect all of this</h2>
+    <p><b>Never force, never label.</b> No food is "good" or "bad," and no meal is a battle. Foods are just fuel that plays at different times. The moment food becomes a fight or a moral issue, you lose the season-long game that actually matters.</p>
+    <p><b>Test everything at practice first.</b> New swaps get tried on practice days, never game days.</p>
+    <p class="small muted"><b>Make it hers.</b> Take her to the store with the Fuel List and let her pick her own foods from each category. A kid who chose her own game-day snack eats her game-day snack. And use the identity, not a lecture: she's an athlete, and athletes fuel.</p>
+  </section>
+</div>
+<script src="fuel.js"></script>
+<script>
+const T=[
+ ['fruit','Won\'t eat fruit',['<b>Applesauce pouches:</b> the #1 picky-kid fruit. If she\'ll only do pouches, that\'s still fruit.','<b>Freeze-dried and dried fruit:</b> freeze-dried strawberries and dried mango taste like candy to most kids.','<b>Frozen fruit in a smoothie:</b> kids who won\'t eat a strawberry will drink twelve of them blended with milk and yogurt.','<b>100% fruit juice:</b> not the everyday drink, but a legitimate simple carb in the game window.','<b>Try the sweet ones first:</b> grapes, watermelon, pineapple, mango, tangerines.','<b>If all else fails, during or right after a game: candy works.</b> Just a little, enough to get the simple carbs in. For recovery, pair it with protein. Not my favorite, but it beats no recovery at all.']],
+ ['veggies','Won\'t eat veggies',['<b>At meals, a healthy fat can stand in for the veggies.</b> Avocado on the plate instead of broccoli is a completely acceptable trade. And veggies never go in the game window anyway, so this fight only belongs at regular meals.','<b>Hide veggies in everything.</b> Kale and spinach blend into smoothies. In chili, stews, meat sauce, meatballs and meatloaf: chop veggies really tiny (zucchini, squash, mushrooms) and throw them in. Neither of my kids likes those veggies, and they eat them daily.','<b>Spinach goes in everything at my house:</b> meatloaf, meatballs, burgers. It doesn\'t taste like anything.','<b>The green-smoothie ask:</b> "try it even though it\'s green. If you taste it and don\'t like it, you don\'t have to drink it."','<b>Keep offering without pressure.</b> A veggie on the plate with zero commentary wins more often over a season than a nightly standoff.']],
+ ['meat','Won\'t eat meat',['<b>Dairy is protein:</b> Greek yogurt, cheese sticks, cottage cheese, milk and chocolate milk.','<b>Eggs count,</b> and so does an egg sandwich.','<b>Deli meat</b> often works for kids who refuse the same meat served hot on a plate.','<b>The smoothie move:</b> protein powder blended with fruit and milk. The picky kid\'s complete recovery snack in one cup.','<b>PB&J is not a failure.</b> Peanut butter brings healthy fat and some protein, the bread is a quick starch, add a banana and that\'s a legitimate athlete meal.']],
+ ['plain','Only eats plain food',['<b>Quick starches are your best friend:</b> pretzels, crackers, plain bagels, white toast, waffles. The game-window foods are naturally plain.','<b>Flavored rice cakes:</b> the chocolate ones win over almost every picky eater I\'ve met.','<b>A rice cake with peanut butter and chocolate chips</b> feels like a treat and works as real fuel.','<b>Plain pasta and plain rice</b> are complex carbs doing their full job. The protein can sit next to them instead of touching them. That\'s fine.']],
+ ['breakfast','Won\'t eat breakfast',['<b>The rule stands:</b> she eats something, especially on game and practice days. But "something" has picky-friendly versions.','<b>PB&J and a banana:</b> the classic picky-eater breakfast that actually fuels.','<b>Yogurt with the fruit ON THE SIDE.</b> It doesn\'t have to be mixed in. Ever.','<b>A waffle</b> with peanut butter or just fruit.','<b>A smoothie:</b> milk + yogurt + frozen fruit. Kids who can\'t face food at 7am can almost always drink.','<b>Even just a piece of fruit beats an empty tank.</b> Start there and build.']]];
+let k=location.hash.replace('#','')||'fruit';if(!T.find(t=>t[0]===k))k='fruit';
+function render(){$('#tabs').innerHTML=T.map(([id,n])=>`<button class="chip" data-k="${id}" aria-pressed="${id===k}">${esc(n)}</button>`).join('');const t=T.find(x=>x[0]===k);
+  $('#body').innerHTML=`<section class="card"><h2>If she ${t[1].toLowerCase().replace("won't","won't")}</h2><ul class="arrows">${t[2].map(x=>`<li>${x}</li>`).join('')}</ul></section>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;k=b.dataset.k;history.replaceState(null,'','#'+k);render()});
+render();
+</script>

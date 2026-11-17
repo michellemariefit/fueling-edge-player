@@ -1,0 +1,60 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Tournament Cooler Plan · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>The Tournament Cooler Plan</h1><p class=lead>Multi-game days aren't won by talent. They're won by the family that's still fueled at 3pm on day two.</p></header>
+  <section class="card">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><h2>The cooler checklist</h2><button class="chip" id="reset">Start a new cooler</button></div>
+    <p class="small muted">Pack tonight, not in the morning. Run it the night before every tournament and packing takes 10 minutes.</p>
+    <div id="cooler"></div>
+    <div class="bar"><i id="bar"></i></div>
+  </section>
+  <section class="card pink">
+    <h2>The gap rule</h2>
+    <p class="small muted">What she eats between games. Skip the team snack table. She doesn't eat because food is sitting there. She eats by this card.</p>
+    <ul class="arrows">
+      <li><b>Less than an hour to the next game?</b> Simple carbs and quick starches only: fruit, applesauce, pretzels. Her stomach needs to be empty enough to play.</li>
+      <li><b>Longer gap?</b> Add regular protein: the sandwich, Chomps, deli meat. It fills her up and holds her over.</li>
+      <li><b>Last game done?</b> Simple carb + regular protein within 30 minutes (chocolate milk works), real meal within 2 hours. Now the treat is allowed.</li>
+    </ul>
+    <button class="go" id="share">Text the gap rule to whoever's at the game</button>
+  </section>
+  <details><summary>The night before</summary><div class="in">
+    <p>Dinner follows the house rules: complex carbs + regular protein (lean) + veggies. Healthy fats like avocado can come alongside the veggies, or replace them for the picky eater.</p>
+    <p><b>Kitchen?</b> Pasta with chicken and salad. Taco night with ground turkey, beans, guac, a little cheese. Grill night with chicken, steak or fish, rice or potatoes, a veggie, salad and avocado.</p>
+    <p><b>Hotel?</b> Any restaurant where they can get a meat with rice or potato and a salad or veggie. Mexican works (chicken or steak bowl, quesadilla), Italian works (pasta with protein and a salad), a grill or steakhouse works.</p>
+    <p><b>Absolutely no</b> fries, pizza, onion rings, fried chicken, nuggets. Nothing fried, no dessert. Pack the cooler tonight.</p>
+  </div></details>
+  <details><summary>The food-table trap</summary><div class="in">
+    <p>Every tournament has one: the team table loaded with muffins, chips and candy, and kids grazing on it all day. Fried food and junk pull the body into digestion mode. Her energy goes to breaking down that food instead of powering her sport. A kid playing the 2pm game in a food coma while the fueled kids are still fast.</p>
+    <p>She doesn't eat because food is sitting there. She eats by the gap rule.</p>
+  </div></details>
+  <details><summary>Get the team on the same page</summary><div class="in">
+    <p>There's nothing worse than three kids eating junk next to one or two who can't. Have a chat with the other parents before the season or the tournament. Get aligned on the food table, team breakfasts, and meals between games. When every kid has the healthy choice in front of them, they don't miss the junk. Kids eat what's there.</p>
+    <p>Give the girls the identity, not a lecture: they're athletes, and athletes set the standard. During games and tournaments it's go time.</p>
+    <p><b>Tournament hydration.</b> Her own bottle, refilled all day. The salt-pinch habit before games. Outdoor or heat? This is when an electrolyte drink earns its place.</p>
+    <p class="small muted"><b>A note on moderation.</b> This isn't a no-junk-ever house. Pizza nights, ice cream, the treat after the last game. All of it belongs in their life. It just doesn't belong before or after games and practices. Junk in moderation, fuel when it counts.</p>
+  </div></details>
+</div>
+<script src="fuel.js"></script>
+<script>
+const KEY='fuel:cooler';
+function render(){const t=store.get(KEY,{});const items=DATA.cooler;const n=items.filter(i=>t[i.id]).length;
+  $('#cooler').innerHTML=items.map(i=>`<div class="item ${t[i.id]?'done':''}"><input type="checkbox" id="c-${i.id}" data-id="${i.id}" ${t[i.id]?'checked':''}><label for="c-${i.id}"><b>${esc(i.item)}</b>${i.cat?`<small>${esc(i.cat)}</small>`:''}</label></div>`).join('');
+  $('#bar').style.width=Math.round(100*n/items.length)+'%';}
+document.addEventListener('change',e=>{const c=e.target.closest('input[data-id]');if(!c)return;const t=store.get(KEY,{});t[c.dataset.id]=c.checked;store.set(KEY,t);render()});
+document.addEventListener('click',e=>{if(e.target.id==='reset'){store.set(KEY,{});render()}
+  if(e.target.id==='share'){const txt='THE GAP RULE (what she eats between games)\n\nSkip the team snack table. She eats by this:\n\n- Less than an hour to the next game? Simple carbs and quick starches only: fruit, applesauce, pretzels.\n- Longer gap? Add regular protein: the sandwich, Chomps, deli meat.\n- Last game done? Simple carb + protein within 30 min (chocolate milk works), real meal within 2 hours. Now the treat is allowed.\n\nWater all day. Salt pinch in the car.\n\nFrom The Fueling Edge by Michelle Marie';
+    if(navigator.share){navigator.share({title:'The gap rule',text:txt}).catch(()=>{})}else{navigator.clipboard&&navigator.clipboard.writeText(txt);e.target.textContent='Copied. Paste it into a text.'}}});
+loadData().then(render);
+</script>

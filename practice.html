@@ -1,0 +1,55 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Practice-Day Fueling · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>Practice-Day Fueling</h1><p class=lead>The after-school bridge snack is the highest-leverage change in this whole program.</p></header>
+  <div class="card soft"><p><b>The school day is the problem.</b> Lunch at 11, practice at 4 or later. By the time she steps on the field her last real fuel was 5 or 6 hours ago. She's dragging, she's cranky in the car, the coach says she seemed off. It wasn't a bad day. It was an empty tank. Put fuel between school and practice, every single practice day.</p></div>
+  <section class="card"><h2>What kind of day?</h2>
+    <span class="seg" id="kind"><button data-k="early" aria-pressed="true">Early practice (5 to 6pm)</button><button data-k="late" aria-pressed="false">Late (7pm+)</button><button data-k="packed" aria-pressed="false">Away 6 to 8 hrs</button></span>
+  </section>
+  <div id="plan"></div>
+  <section class="card"><h2>After practice, either schedule</h2>
+    <p>Practice drains her fuel even when it doesn't look intense. A little something after helps her recover for tomorrow.</p>
+    <ul class="arrows"><li>Fruit plus pretzels or another quick starch.</li><li>A smoothie is a great option, especially if she trained hard.</li><li>Practice ran long and hard? Add a protein. Deli meat or Chomps, or fast-digesting protein in a smoothie.</li></ul>
+    <a class="go brand" href="recovery.html">Start the recovery window →</a>
+  </section>
+  <details><summary>The Double-Batch Rule</summary><div class="in">
+    <p>Whatever I make for dinner, I double. We're a family of four, so instead of 4 chicken breasts I cook 8. Same recipe, same pans, same oven, same time in the kitchen. Doubling a recipe doesn't double the work.</p>
+    <p>The next day, everyone, including mom, has a hot healthy lunch or after-school meal already made: microwave and done. That late hot lunch before early practice? Already cooked. Send it to school in a thermos. No takeout, no standing in the kitchen at 3pm. I've run this for 20 years.</p>
+  </div></details>
+  <div class="card pink"><p><b>The rule under all of it.</b> Practice is where fueling gets practiced. Every food, every timing, everything she'll eat on a game day gets tested on a practice day first. Nothing new on game day starts here.</p></div>
+</div>
+<script src="fuel.js"></script>
+<script>
+const PLANS={
+ early:{title:'Early practice (5 to 6pm)',intro:'No room for a full dinner before, so the meal after school does the heavy lifting and a small snack tops her off on the drive.',
+  steps:[['After school, at home','A late hot lunch: regular protein + complex carbs + veggies or a healthy fat. A real plate, not a snack. This is the meal that fuels her practice.',['protein','complex','fats']],
+         ['On the way to practice','Pretzels and fruit, or a granola bar or Z-bar. Easy-to-digest fuel that tops off her energy without sitting heavy.',['simple','quick']],
+         ['After practice','Dinner becomes her recovery meal.',['protein','complex','veggies']]]},
+ late:{title:'Late practice (7pm+)',intro:'Dinner moves earlier and a snack fills the gap after school. Kids come home hungry, and if nothing is planned, that\'s when the junk grazing starts.',
+  steps:[['After school','A small healthy snack: an oatmeal pancake, a healthy muffin or cookie, fruit and pretzels, yogurt, or a rice cake with peanut butter and chocolate chips. Enough to hold her over, not enough to ruin dinner.',['simple','quick']],
+         ['Early dinner, 5:30 to 6','Regular protein + complex carb + healthy fat, an hour or more before practice. Baked chicken, jasmine rice, avocado.',['protein','complex','fats']],
+         ['After practice, if she is still hungry','Another healthy snack. Growing athletes often are, and that\'s normal.',['simple','protein']]]},
+ packed:{title:'Away from home 6 to 8 hours',intro:'Long training days, aftercare, school sports that run straight into the evening. Same system, packable version.',
+  steps:[['Breakfast that holds','An egg sandwich, or oatmeal with chocolate chips and milk (regular protein + complex carbs). This carries her until lunch.',['protein','complex']],
+         ['After a training session','A protein smoothie (fast-digesting protein).',['fastprotein','simple']],
+         ['The school lunch rule','Teach her this so she picks for herself: regular protein (lean) + complex carbs and/or a healthy fat.',['protein','complex','fats']],
+         ['1 to 2 hours after lunch','A bar.',['quick']],
+         ['Always in the bag','The foods that survive a backpack: tangerine, apple, freeze-dried strawberries, pretzels. Pack them every morning so she is never stuck with the vending machine.',['simple','quick']],
+         ['Home','A warm meal.',['protein','complex','veggies']]]}};
+let k=store.get('fuel:practice','early');
+function render(){const p=PLANS[k];document.querySelectorAll('#kind button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===k));
+  $('#plan').innerHTML=`<section class="card"><h2>${esc(p.title)}</h2><p class="muted">${p.intro}</p><div class="timeline">${p.steps.map(([t,r,cats])=>{const foods=cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');return `<div class="slot" style="grid-template-columns:1fr"><div><h3>${esc(t)}</h3><p>${r}</p>${foods?`<p class="picks">Her picks: ${esc(foods)}</p>`:''}</div></div>`}).join('')}</div></section>`}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(!b)return;k=b.dataset.k;store.set('fuel:practice',k);render()});
+loadData().then(render);
+</script>

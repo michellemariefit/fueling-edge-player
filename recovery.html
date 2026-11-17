@@ -1,0 +1,58 @@
+<!doctype html>
+<meta charset="utf-8">
+<base target="_top">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Recovery Window · The Fueling Edge</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#b0295e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fueling">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="fuel.css">
+<div class="wrap">
+<header><a class="back" href="start.html">← Home</a><span class="eyebrow">The Fueling Edge</span><h1>The Recovery Window</h1><p class=lead>The 30 minutes after decide how tomorrow feels.</p></header>
+  <section class="card" id="timercard">
+    <h2>Within 30 minutes: the recovery snack</h2>
+    <div class="big" id="clock">30:00</div>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="cta-row"><button class="go" id="startBtn">Practice just ended</button><button class="go quiet" id="ateBtn">She ate it ✓</button></div>
+    <p class="small muted" id="hint">Tap when she walks off the field. The clock runs even if you close the app.</p>
+  </section>
+  <section class="card">
+    <h2>What to grab</h2>
+    <p>The formula is <b>fast-digesting protein + simple carbs</b>. The simple carbs refill her fuel stores fast, and the protein starts muscle repair right away.</p>
+    <ul class="arrows">
+      <li><b>Best:</b> a protein smoothie. Protein powder blended with fruit. Kids drink it even when they're too tired to eat.</li>
+      <li><b>Next best:</b> eggs with fruit. More whites than yolks.</li>
+      <li>No blender, on the go: chocolate milk · rotisserie chicken or deli meat with fruit · yogurt with granola · banana with peanut butter · cheese and crackers.</li>
+    </ul>
+    <p id="picks" class="picks" style="color:var(--brand);font-weight:600;font-size:14px"></p>
+    <p class="small muted"><b>Grocery store trick:</b> no chicken packed? Stop at any grocery store before games. First choice a rotisserie chicken. None ready? Deli turkey or roast beef from the counter. Protein solved in five minutes.</p>
+  </section>
+  <section class="card soft">
+    <h2>Within 2 hours: the real meal</h2>
+    <p>The snack starts recovery. Dinner finishes it. Regular protein + complex carbs + veggies. Baked chicken with jasmine rice and a veggie. Pasta with ground turkey and salad. Taco bowls. Normal family food, doing elite-athlete work.</p>
+  </section>
+  <details><summary>The part parents miss: sleep</summary><div class="in">
+    <p>Recovery is a chain with three links: the snack, the meal, and the night. The food gives her body the materials; sleep is when it uses them. And it's not just how long she sleeps, it's when.</p>
+    <p>Deep sleep is front-loaded. The first few hours of the night carry most of it, and that early deep sleep is when growth hormone releases, the repair-and-grow hormone. Her wake-up time is locked by school, so every hour past bedtime doesn't shift that window, it cuts it.</p>
+    <p><b>The house rule: in bed before 10pm.</b> A great recovery snack followed by an 11pm bedtime on a school night is half a recovery. The chain ends with the next morning's breakfast.</p>
+    <p class="small muted">On a random Tuesday, missing the window costs a little. On back-to-back days it costs a lot: tournament weekends, two-a-days, a practice the night before a game.</p>
+  </div></details>
+</div>
+<script src="fuel.js"></script>
+<script>
+const KEY='fuel:recovery';let timer=null;
+function render(){const r=store.get(KEY,{});const now=Date.now();
+  if(r.ate&&r.ate>now-6*3600e3){$('#clock').textContent='Done';$('#bar').style.width='100%';$('#hint').textContent='Recovery snack logged for today. Dinner within two hours finishes the job.';$('#startBtn').textContent='Start again';return}
+  if(!r.start||now-r.start>60*60e3){$('#clock').textContent='30:00';$('#bar').style.width='0';return}
+  const left=Math.max(0,r.start+30*60e3-now);const m=Math.floor(left/60000),s=Math.floor(left%60000/1000);
+  $('#clock').textContent=left?`${m}:${String(s).padStart(2,'0')}`:'0:00';$('#bar').style.width=Math.round(100*(1-left/(30*60e3)))+'%';
+  $('#hint').textContent=left?'Window open. Hand her the snack and tap "She ate it".':'Window closed. Still feed her, it just works slower. Tap "She ate it" when she does.';}
+document.addEventListener('click',e=>{if(e.target.id==='startBtn'){store.set(KEY,{start:Date.now()});render()}
+  if(e.target.id==='ateBtn'){const r=store.get(KEY,{});r.ate=Date.now();store.set(KEY,r);const w=store.get('fuel:week:'+TODAY,{});w.snack=true;store.set('fuel:week:'+TODAY,w);logDone('snack');render()}});
+setInterval(render,1000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)render()});
+loadData().then(()=>{const f=picksText('fastprotein',2),s=picksText('simple',3),p=picksText('protein',2);$('#picks').textContent=`Her picks: ${[f,s,p].filter(Boolean).join(' · ')}`;render()});
+</script>
