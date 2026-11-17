@@ -43,9 +43,12 @@ const saved=store.get('fuel:game',{});
 $('#gdate').value=saved.date||TODAY;$('#gtime').value=saved.time||'10:00';
 function build(){const date=$('#gdate').value,time=$('#gtime').value;if(!date||!time)return;store.set('fuel:game',{date,time});
   const g=new Date(date+'T'+time);const ticks=store.get('fuel:game:'+date,{});
-  $('#clock').innerHTML=`<section class="card"><h2>${g.toLocaleDateString([], {weekday:'long',month:'short',day:'numeric'})} · game at ${fmtTime(g)}</h2><div class="timeline">${SLOTS.map((s,i)=>{
+  // Early game: breakfast and the 90-minute meal are the same meal. She eats when she gets up, no earlier.
+  const seven=new Date(g);seven.setHours(7,0,0,0);const early=g.getTime()-seven.getTime()<150*60000;
+  const slots=SLOTS.filter(s=>!(early&&s.m===-90)).map(s=>early&&s.morning?{...s,name:'She eats as soon as she is up',rule:'Early game. No need to wake her earlier to eat. Whatever time she gets up, she eats then. 1.5+ hours to go: regular protein + complex carbs + fruit. An hour or less: quick starches + fruit, as much as she can without feeling sick. Rushed? The Wake-and-Fuel Formula: 1 fast-digesting protein, 1 complex carb, 1 fruit. Hotel? Bagel or toast first, add fruit. Something small beats nothing.'}:s);
+  $('#clock').innerHTML=`<section class="card"><h2>${g.toLocaleDateString([], {weekday:'long',month:'short',day:'numeric'})} · game at ${fmtTime(g)}</h2><div class="timeline">${slots.map((s,i)=>{
     let t=new Date(g.getTime()+s.m*60000);let tl=s.m===-18*60?'Tonight':s.morning?'Breakfast':fmtTime(t);
-    if(s.morning){const seven=new Date(g);seven.setHours(7,0,0,0);const latest=new Date(g.getTime()-90*60000);t=seven<latest?seven:new Date(g.getTime()-120*60000);tl=fmtTime(t)}
+    if(s.morning){if(early){tl='When she\'s up'}else{const latest=new Date(g.getTime()-90*60000);t=seven<latest?seven:new Date(g.getTime()-120*60000);tl=fmtTime(t)}}
     const foods=s.cats.map(c=>picksText(c,3)).filter(Boolean).join(' · ');
     return `<div class="slot"><div class="t">${tl}<small>${esc(s.label)}</small></div><div><h3>${esc(s.name)}</h3><p>${s.rule}</p>${foods?`<p class="picks">Your athlete's picks: ${esc(foods)}</p>`:''}<label class="small" style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" data-tick="${i}" ${ticks[i]?'checked':''} style="width:20px;height:20px;accent-color:var(--brand)"> Done</label></div></div>`}).join('')}</div>
     <p class="small muted">Your athlete's picks come from the Fuel List. <a href="fuel.html" style="color:var(--brand);font-weight:700">Change them</a>.</p></section>`;
